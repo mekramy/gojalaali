@@ -1,6 +1,6 @@
 # Go Jalaali
 
-`gojalaali` is a Go package that provides implementation of Jalaali (Persian) calendar for standard go `time` package. It supports standard Go **time** package layout for formatting and parsing jalaali dates and times, as well as converting between Jalaali and Gregorian dates.
+`gojalaali` is a Go package that provides implementation of Jalaali (Persian) calendar for standard go `time` interface. It supports standard Go **time** package layout for formatting and parsing jalaali dates and times, as well as converting between Jalaali and Gregorian dates.
 
 ## Installation
 
