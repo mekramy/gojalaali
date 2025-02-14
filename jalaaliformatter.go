@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func (driver jTime) formatOffset(f ...string) string {
+func (jt jTime) formatOffset(f ...string) string {
 	format := "-07:00"
 	valids := []string{
 		"Z070000", "Z0700",
@@ -23,7 +23,7 @@ func (driver jTime) formatOffset(f ...string) string {
 	}
 
 	// Return zero offset
-	_, offset := driver.Zone()
+	_, offset := jt.Zone()
 	if offset == 0 {
 		switch format {
 		case "-070000":
@@ -61,94 +61,94 @@ func (driver jTime) formatOffset(f ...string) string {
 	}
 }
 
-func (driver jTime) formatMST() string {
-	zone, _ := driver.Zone()
+func (jt jTime) formatMST() string {
+	zone, _ := jt.Zone()
 	if zone == "" || strings.ToLower(zone) == "local" {
-		return driver.formatOffset("-0700")
+		return jt.formatOffset("-0700")
 	}
 	return zone
 }
 
-func (driver jTime) formatRFC3339(isNano bool) string {
+func (jt jTime) formatRFC3339(isNano bool) string {
 	var result strings.Builder
-	result.WriteString(fmt.Sprintf("%04d", driver.year))
+	result.WriteString(fmt.Sprintf("%04d", jt.year))
 	result.WriteString("-")
-	result.WriteString(fmt.Sprintf("%02d", driver.month))
+	result.WriteString(fmt.Sprintf("%02d", jt.month))
 	result.WriteString("-")
-	result.WriteString(fmt.Sprintf("%02d", driver.day))
+	result.WriteString(fmt.Sprintf("%02d", jt.day))
 	result.WriteString("T")
-	result.WriteString(fmt.Sprintf("%02d", driver.hour))
+	result.WriteString(fmt.Sprintf("%02d", jt.hour))
 	result.WriteString(":")
-	result.WriteString(fmt.Sprintf("%02d", driver.min))
+	result.WriteString(fmt.Sprintf("%02d", jt.min))
 	result.WriteString(":")
-	result.WriteString(fmt.Sprintf("%02d", driver.sec))
+	result.WriteString(fmt.Sprintf("%02d", jt.sec))
 	// Nanosecond
-	if isNano && driver.nsec > 0 {
-		nanosec := fmt.Sprintf(".%09s", strconv.FormatInt(int64(driver.nsec), 10))
+	if isNano && jt.nsec > 0 {
+		nanosec := fmt.Sprintf(".%09s", strconv.FormatInt(int64(jt.nsec), 10))
 		result.WriteString(nanosec)
 	}
-	result.WriteString(driver.formatOffset("Z07:00"))
+	result.WriteString(jt.formatOffset("Z07:00"))
 	return result.String()
 }
 
-func (driver jTime) Format(layout string) string {
+func (jt jTime) Format(layout string) string {
 	// Quick Format RFC3339 and RFC3339Nano
 	if layout == time.RFC3339 || layout == time.RFC3339Nano {
-		return driver.formatRFC3339(layout == time.RFC3339Nano)
+		return jt.formatRFC3339(layout == time.RFC3339Nano)
 	}
 
 	// Format layout
-	isDari := driver.Location().String() == KabulTz().String()
+	isDari := jt.Location().String() == KabulTz().String()
 	return strings.NewReplacer(
 		// Year
-		"2006", formatYear(driver.year, 4),
-		"06", formatYear(driver.year, 2),
+		"2006", formatYear(jt.year, 4),
+		"06", formatYear(jt.year, 2),
 		// Hour
-		"15", fmt.Sprintf("%02d", driver.hour), // Put hour to render before month 1
+		"15", fmt.Sprintf("%02d", jt.hour), // Put hour to render before month 1
 		// Month
-		"January", formatMonth(driver.month, false, isDari),
-		"Jan", formatMonth(driver.month, true, isDari),
-		"01", fmt.Sprintf("%02d", driver.month),
-		"1", fmt.Sprintf("%d", driver.month),
+		"January", formatMonth(jt.month, false, isDari),
+		"Jan", formatMonth(jt.month, true, isDari),
+		"01", fmt.Sprintf("%02d", jt.month),
+		"1", fmt.Sprintf("%d", jt.month),
 		// Day
-		"02", fmt.Sprintf("%02d", driver.day),
-		"_2", fmt.Sprintf("%2d", driver.day),
-		"2", fmt.Sprintf("%d", driver.day),
+		"02", fmt.Sprintf("%02d", jt.day),
+		"_2", fmt.Sprintf("%2d", jt.day),
+		"2", fmt.Sprintf("%d", jt.day),
 		// Weekday
-		"Monday", driver.wday.String(),
-		"Mon", driver.wday.Short(),
+		"Monday", jt.wday.String(),
+		"Mon", jt.wday.Short(),
 		// Hour
-		"03", fmt.Sprintf("%02d", driver.Hour12()),
-		"3", fmt.Sprintf("%d", driver.Hour12()),
+		"03", fmt.Sprintf("%02d", jt.Hour12()),
+		"3", fmt.Sprintf("%d", jt.Hour12()),
 		// Minute
-		"04", fmt.Sprintf("%02d", driver.min),
-		"4", fmt.Sprintf("%d", driver.min),
+		"04", fmt.Sprintf("%02d", jt.min),
+		"4", fmt.Sprintf("%d", jt.min),
 		// Second
-		"05", fmt.Sprintf("%02d", driver.sec),
-		"5", fmt.Sprintf("%d", driver.sec),
+		"05", fmt.Sprintf("%02d", jt.sec),
+		"5", fmt.Sprintf("%d", jt.sec),
 		// Milliseconds
-		".999999999", formatFractional(driver.nsec, 9, true),
-		".999999", formatFractional(driver.nsec, 6, true),
-		".999", formatFractional(driver.nsec, 3, true),
-		".000000000", formatFractional(driver.nsec, 9, false),
-		".000000", formatFractional(driver.nsec, 6, false),
-		".000", formatFractional(driver.nsec, 3, false),
+		".999999999", formatFractional(jt.nsec, 9, true),
+		".999999", formatFractional(jt.nsec, 6, true),
+		".999", formatFractional(jt.nsec, 3, true),
+		".000000000", formatFractional(jt.nsec, 9, false),
+		".000000", formatFractional(jt.nsec, 6, false),
+		".000", formatFractional(jt.nsec, 3, false),
 		// Daytime
-		"Morning", driver.DayTime().String(),
-		"PM", driver.AmPm().String(),
-		"pm", driver.AmPm().Short(),
+		"Morning", jt.DayTime().String(),
+		"PM", jt.AmPm().String(),
+		"pm", jt.AmPm().Short(),
 		// Timezone
-		"MST", driver.formatMST(),
-		"Z070000", driver.formatOffset("Z070000"),
-		"Z0700", driver.formatOffset("Z0700"),
-		"Z07:00:00", driver.formatOffset("Z07:00:00"),
-		"Z07:00", driver.formatOffset("Z07:00"),
-		"Z07", driver.formatOffset("Z07"),
-		"-070000", driver.formatOffset("-070000"),
-		"-0700", driver.formatOffset("-0700"),
-		"-07:00:00", driver.formatOffset("-07:00:00"),
-		"-07:00", driver.formatOffset("-07:00"),
-		"-07", driver.formatOffset("-07"),
+		"MST", jt.formatMST(),
+		"Z070000", jt.formatOffset("Z070000"),
+		"Z0700", jt.formatOffset("Z0700"),
+		"Z07:00:00", jt.formatOffset("Z07:00:00"),
+		"Z07:00", jt.formatOffset("Z07:00"),
+		"Z07", jt.formatOffset("Z07"),
+		"-070000", jt.formatOffset("-070000"),
+		"-0700", jt.formatOffset("-0700"),
+		"-07:00:00", jt.formatOffset("-07:00:00"),
+		"-07:00", jt.formatOffset("-07:00"),
+		"-07", jt.formatOffset("-07"),
 	).Replace(layout)
 }
 

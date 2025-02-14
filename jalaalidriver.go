@@ -5,31 +5,31 @@ import (
 	"time"
 )
 
-func (driver jTime) IsZero() bool {
-	return driver == jTime{}
+func (jt jTime) IsZero() bool {
+	return jt == jTime{}
 }
 
-func (driver jTime) IsLeap() bool {
-	return isLeap(driver.year)
+func (jt jTime) IsLeap() bool {
+	return isLeap(jt.year)
 }
 
-func (driver jTime) Since(t2 Jalaali) time.Duration {
-	return time.Duration(math.Abs(float64(t2.Unix()-driver.Unix()))) * time.Second
+func (jt jTime) Since(t2 Jalaali) time.Duration {
+	return time.Duration(math.Abs(float64(t2.Unix()-jt.Unix()))) * time.Second
 }
 
-func (driver jTime) AmPm() AmPm {
-	if driver.hour > 12 || (driver.hour == 12 && (driver.min > 0 || driver.sec > 0)) {
+func (jt jTime) AmPm() AmPm {
+	if jt.hour > 12 || (jt.hour == 12 && (jt.min > 0 || jt.sec > 0)) {
 		return Pm
 	}
 	return Am
 }
 
-func (driver jTime) Zone() (string, int) {
-	return driver.Time().Zone()
+func (jt jTime) Zone() (string, int) {
+	return jt.Time().Zone()
 }
 
-func (driver jTime) In(loc *time.Location) Jalaali {
-	res := driver.clone()
+func (jt jTime) In(loc *time.Location) Jalaali {
+	res := jt.clone()
 	if loc != nil {
 		res.loc = loc
 	}
@@ -37,96 +37,96 @@ func (driver jTime) In(loc *time.Location) Jalaali {
 	return res
 }
 
-func (driver jTime) Add(d time.Duration) Jalaali {
-	return New(driver.Time().Add(d))
+func (jt jTime) Add(d time.Duration) Jalaali {
+	return New(jt.Time().Add(d))
 }
 
-func (driver jTime) AddTime(hour, min, sec, nsec int) Jalaali {
+func (jt jTime) AddTime(hour, min, sec, nsec int) Jalaali {
 	hours := time.Duration(hour) * time.Hour
 	mins := time.Duration(min) * time.Minute
 	secs := time.Duration(sec) * time.Second
 	nanos := time.Duration(nsec) * time.Nanosecond
-	return driver.Add(hours + mins + secs + nanos)
+	return jt.Add(hours + mins + secs + nanos)
 }
 
-func (driver jTime) AddDate(year, month, day int) Jalaali {
+func (jt jTime) AddDate(year, month, day int) Jalaali {
 	return Date(
-		driver.year+year, driver.month+Month(month), driver.day+day,
-		driver.hour, driver.min, driver.sec, driver.nsec, driver.loc,
+		jt.year+year, jt.month+Month(month), jt.day+day,
+		jt.hour, jt.min, jt.sec, jt.nsec, jt.loc,
 	)
 }
 
-func (driver jTime) AddDatetime(year, month, day, hour, min, sec, nsec int) Jalaali {
+func (jt jTime) AddDatetime(year, month, day, hour, min, sec, nsec int) Jalaali {
 	return Date(
-		driver.year+year, driver.month+Month(month), driver.day+day,
-		driver.hour+hour, driver.min+min, driver.sec+sec,
-		driver.nsec+nsec, driver.loc,
+		jt.year+year, jt.month+Month(month), jt.day+day,
+		jt.hour+hour, jt.min+min, jt.sec+sec,
+		jt.nsec+nsec, jt.loc,
 	)
 }
 
-func (driver jTime) Yesterday() Jalaali {
-	return driver.AddDate(0, 0, -1)
+func (jt jTime) Yesterday() Jalaali {
+	return jt.AddDate(0, 0, -1)
 }
 
-func (driver jTime) Tomorrow() Jalaali {
-	return driver.AddDate(0, 0, 1)
+func (jt jTime) Tomorrow() Jalaali {
+	return jt.AddDate(0, 0, 1)
 }
 
-func (driver jTime) BeginningOfDay() Jalaali {
-	res := driver.clone()
+func (jt jTime) BeginningOfDay() Jalaali {
+	res := jt.clone()
 	res.SetTime(0, 0, 0, 0)
 	return res
 }
-func (driver jTime) EndOfDay() Jalaali {
-	res := driver.clone()
+func (jt jTime) EndOfDay() Jalaali {
+	res := jt.clone()
 	res.SetTime(23, 59, 59, 999999999)
 	return res
 }
 
-func (driver jTime) FirstWeekDay() Jalaali {
-	if driver.wday == Shanbeh {
-		return driver.clone()
+func (jt jTime) FirstWeekDay() Jalaali {
+	if jt.wday == Shanbeh {
+		return jt.clone()
 	}
-	return driver.AddDate(0, 0, int(Shanbeh-driver.wday))
+	return jt.AddDate(0, 0, int(Shanbeh-jt.wday))
 }
 
-func (driver jTime) LastWeekDay() Jalaali {
-	if driver.wday == Jomeh {
-		return driver.clone()
+func (jt jTime) LastWeekDay() Jalaali {
+	if jt.wday == Jomeh {
+		return jt.clone()
 	}
-	return driver.AddDate(0, 0, int(Jomeh-driver.wday))
+	return jt.AddDate(0, 0, int(Jomeh-jt.wday))
 }
 
-func (driver jTime) BeginningOfWeek() Jalaali {
-	res := driver.FirstWeekDay()
+func (jt jTime) BeginningOfWeek() Jalaali {
+	res := jt.FirstWeekDay()
 	res.SetTime(0, 0, 0, 0)
 	return res
 }
 
-func (driver jTime) EndOfWeek() Jalaali {
-	res := driver.LastWeekDay()
+func (jt jTime) EndOfWeek() Jalaali {
+	res := jt.LastWeekDay()
 	res.SetTime(23, 59, 59, 999999999)
 	return res
 }
 
-func (driver jTime) FirstMonthDay() Jalaali {
-	if driver.day == 1 {
-		return driver.clone()
+func (jt jTime) FirstMonthDay() Jalaali {
+	if jt.day == 1 {
+		return jt.clone()
 	}
 	return Date(
-		driver.year, driver.month, 1,
-		driver.hour, driver.min, driver.sec,
-		driver.nsec, driver.loc,
+		jt.year, jt.month, 1,
+		jt.hour, jt.min, jt.sec,
+		jt.nsec, jt.loc,
 	)
 }
 
-func (driver jTime) LastMonthDay() Jalaali {
+func (jt jTime) LastMonthDay() Jalaali {
 	dIndex := 0
-	if driver.IsLeap() {
+	if jt.IsLeap() {
 		dIndex = 1
 	}
 
-	mIndex := driver.month - 1
+	mIndex := jt.month - 1
 	if mIndex < 0 {
 		mIndex = 0
 	} else if mIndex > 11 {
@@ -134,258 +134,258 @@ func (driver jTime) LastMonthDay() Jalaali {
 	}
 
 	lastDay := monthMeta[mIndex][dIndex]
-	if lastDay == driver.day {
-		return driver.clone()
+	if lastDay == jt.day {
+		return jt.clone()
 	}
 	return Date(
-		driver.year, driver.month, lastDay,
-		driver.hour, driver.min, driver.sec,
-		driver.nsec, driver.loc,
+		jt.year, jt.month, lastDay,
+		jt.hour, jt.min, jt.sec,
+		jt.nsec, jt.loc,
 	)
 }
 
-func (driver jTime) BeginningOfMonth() Jalaali {
-	res := driver.FirstMonthDay()
+func (jt jTime) BeginningOfMonth() Jalaali {
+	res := jt.FirstMonthDay()
 	res.SetTime(0, 0, 0, 0)
 	return res
 }
 
-func (driver jTime) EndOfMonth() Jalaali {
-	res := driver.LastMonthDay()
+func (jt jTime) EndOfMonth() Jalaali {
+	res := jt.LastMonthDay()
 	res.SetTime(23, 59, 59, 999999999)
 	return res
 }
 
-func (driver jTime) FirstYearDay() Jalaali {
-	if driver.month == Farvardin && driver.day == 1 {
-		return driver.clone()
+func (jt jTime) FirstYearDay() Jalaali {
+	if jt.month == Farvardin && jt.day == 1 {
+		return jt.clone()
 	}
 	return Date(
-		driver.year, Farvardin, 1,
-		driver.hour, driver.min, driver.sec,
-		driver.nsec, driver.loc,
+		jt.year, Farvardin, 1,
+		jt.hour, jt.min, jt.sec,
+		jt.nsec, jt.loc,
 	)
 }
 
-func (driver jTime) LastYearDay() Jalaali {
+func (jt jTime) LastYearDay() Jalaali {
 	dIndex := 0
-	if driver.IsLeap() {
+	if jt.IsLeap() {
 		dIndex = 1
 	}
 	lastDay := monthMeta[Esfand-1][dIndex]
-	if driver.month == Esfand && driver.day == lastDay {
-		return driver.clone()
+	if jt.month == Esfand && jt.day == lastDay {
+		return jt.clone()
 	}
 	return Date(
-		driver.year, Esfand, lastDay,
-		driver.hour, driver.min, driver.sec,
-		driver.nsec, driver.loc,
+		jt.year, Esfand, lastDay,
+		jt.hour, jt.min, jt.sec,
+		jt.nsec, jt.loc,
 	)
 }
 
-func (driver jTime) BeginningOfYear() Jalaali {
-	res := driver.FirstYearDay()
+func (jt jTime) BeginningOfYear() Jalaali {
+	res := jt.FirstYearDay()
 	res.SetTime(0, 0, 0, 0)
 	return res
 }
 
-func (driver jTime) EndOfYear() Jalaali {
-	res := driver.LastYearDay()
+func (jt jTime) EndOfYear() Jalaali {
+	res := jt.LastYearDay()
 	res.SetTime(23, 59, 59, 999999999)
 	return res
 }
 
-func (driver *jTime) SetYear(year int) {
-	driver.year = year
-	driver.normalizeDay()
-	driver.resetWeekday()
+func (jt *jTime) SetYear(year int) {
+	jt.year = year
+	jt.normalizeDay()
+	jt.resetWeekday()
 }
 
-func (driver *jTime) SetMonth(month Month) {
-	driver.month = month
-	driver.normalizeMonth()
-	driver.normalizeDay()
-	driver.resetWeekday()
+func (jt *jTime) SetMonth(month Month) {
+	jt.month = month
+	jt.normalizeMonth()
+	jt.normalizeDay()
+	jt.resetWeekday()
 }
 
-func (driver *jTime) SetDay(day int) {
-	driver.day = day
-	driver.normalizeDay()
-	driver.resetWeekday()
+func (jt *jTime) SetDay(day int) {
+	jt.day = day
+	jt.normalizeDay()
+	jt.resetWeekday()
 }
 
-func (driver *jTime) SetHour(hour int) {
-	driver.hour = hour
-	driver.normalizeHour()
+func (jt *jTime) SetHour(hour int) {
+	jt.hour = hour
+	jt.normalizeHour()
 }
 
-func (driver *jTime) SetMinute(min int) {
-	driver.min = min
-	driver.normalizeMin()
+func (jt *jTime) SetMinute(min int) {
+	jt.min = min
+	jt.normalizeMin()
 }
 
-func (driver *jTime) SetSecond(sec int) {
-	driver.sec = sec
-	driver.normalizeSec()
+func (jt *jTime) SetSecond(sec int) {
+	jt.sec = sec
+	jt.normalizeSec()
 }
 
-func (driver *jTime) SetNanosecond(nsec int) {
-	driver.nsec = nsec
-	driver.normalizeNano()
+func (jt *jTime) SetNanosecond(nsec int) {
+	jt.nsec = nsec
+	jt.normalizeNano()
 }
 
-func (driver *jTime) SetTime(hour, min, sec, nsec int) {
+func (jt *jTime) SetTime(hour, min, sec, nsec int) {
 	if hour >= 0 {
-		driver.SetHour(hour)
+		jt.SetHour(hour)
 	}
 	if min >= 0 {
-		driver.SetMinute(min)
+		jt.SetMinute(min)
 	}
 	if sec >= 0 {
-		driver.SetSecond(sec)
+		jt.SetSecond(sec)
 	}
 	if nsec >= 0 {
-		driver.SetNanosecond(nsec)
+		jt.SetNanosecond(nsec)
 	}
 }
 
-func (driver *jTime) SetDate(year, month, day int) {
+func (jt *jTime) SetDate(year, month, day int) {
 	if year > 0 {
-		driver.SetYear(year)
+		jt.SetYear(year)
 	}
 	if month > 0 {
-		driver.SetMonth(Month(month))
+		jt.SetMonth(Month(month))
 	}
 	if day > 0 {
-		driver.SetDay(day)
+		jt.SetDay(day)
 	}
 }
 
-func (driver *jTime) SetDateTime(year, month, day, hour, min, sec, nsec int) {
-	driver.SetDate(year, month, day)
-	driver.SetTime(hour, min, sec, nsec)
+func (jt *jTime) SetDateTime(year, month, day, hour, min, sec, nsec int) {
+	jt.SetDate(year, month, day)
+	jt.SetTime(hour, min, sec, nsec)
 }
 
-func (driver jTime) Year() int {
-	return driver.year
+func (jt jTime) Year() int {
+	return jt.year
 }
 
-func (driver jTime) YearDay() int {
-	month := driver.month - 1
+func (jt jTime) YearDay() int {
+	month := jt.month - 1
 	if month < 0 {
 		month = 0
 	} else if month > 11 {
 		month = 11
 	}
-	return monthMeta[month][2] + driver.day
+	return monthMeta[month][2] + jt.day
 }
 
-func (driver jTime) YearRemainDays() int {
+func (jt jTime) YearRemainDays() int {
 	days := 365
-	if driver.IsLeap() {
+	if jt.IsLeap() {
 		days = 366
 	}
-	return days - driver.YearDay()
+	return days - jt.YearDay()
 }
 
-func (driver jTime) Month() Month {
-	return driver.month
+func (jt jTime) Month() Month {
+	return jt.month
 }
 
-func (driver jTime) Weekday() Weekday {
-	return driver.wday
+func (jt jTime) Weekday() Weekday {
+	return jt.wday
 }
 
-func (driver jTime) MonthWeek() int {
-	return int(math.Ceil(float64(driver.day+int(driver.FirstMonthDay().Weekday())) / 7.0))
+func (jt jTime) MonthWeek() int {
+	return int(math.Ceil(float64(jt.day+int(jt.FirstMonthDay().Weekday())) / 7.0))
 }
 
-func (driver jTime) YearWeek() int {
-	return int(math.Ceil(float64(driver.YearDay()+int(driver.FirstYearDay().Weekday())) / 7.0))
+func (jt jTime) YearWeek() int {
+	return int(math.Ceil(float64(jt.YearDay()+int(jt.FirstYearDay().Weekday())) / 7.0))
 }
 
-func (driver jTime) YearRemainWeeks() int {
-	return 52 - driver.YearWeek()
+func (jt jTime) YearRemainWeeks() int {
+	return 52 - jt.YearWeek()
 }
 
-func (driver jTime) Day() int {
-	return driver.day
+func (jt jTime) Day() int {
+	return jt.day
 }
 
-func (driver jTime) MonthRemainDays() int {
+func (jt jTime) MonthRemainDays() int {
 	dIndex := 0
-	if driver.IsLeap() {
+	if jt.IsLeap() {
 		dIndex = 1
 	}
 
-	mIndex := driver.month - 1
+	mIndex := jt.month - 1
 	if mIndex < 0 {
 		mIndex = 0
 	} else if mIndex > 11 {
 		mIndex = 11
 	}
 
-	return monthMeta[mIndex][dIndex] - driver.day
+	return monthMeta[mIndex][dIndex] - jt.day
 }
 
-func (driver jTime) Hour() int {
-	return driver.hour
+func (jt jTime) Hour() int {
+	return jt.hour
 }
 
-func (driver jTime) Hour12() int {
-	if driver.hour > 12 {
-		return driver.hour - 12
+func (jt jTime) Hour12() int {
+	if jt.hour > 12 {
+		return jt.hour - 12
 	} else {
-		return driver.hour
+		return jt.hour
 	}
 }
 
-func (driver jTime) Minute() int {
-	return driver.min
+func (jt jTime) Minute() int {
+	return jt.min
 }
 
-func (driver jTime) Second() int {
-	return driver.sec
+func (jt jTime) Second() int {
+	return jt.sec
 }
 
-func (driver jTime) Nanosecond() int {
-	return driver.nsec
+func (jt jTime) Nanosecond() int {
+	return jt.nsec
 }
 
-func (driver jTime) DayTime() DayTime {
-	return DayTime(driver.hour / 3)
+func (jt jTime) DayTime() DayTime {
+	return DayTime(jt.hour / 3)
 }
 
-func (driver jTime) Location() *time.Location {
-	return driver.loc
+func (jt jTime) Location() *time.Location {
+	return jt.loc
 }
 
-func (driver jTime) Date() (int, Month, int) {
-	return driver.year, driver.month, driver.day
+func (jt jTime) Date() (int, Month, int) {
+	return jt.year, jt.month, jt.day
 }
 
-func (driver jTime) Clock() (int, int, int) {
-	return driver.hour, driver.min, driver.sec
+func (jt jTime) Clock() (int, int, int) {
+	return jt.hour, jt.min, jt.sec
 }
 
-func (driver jTime) Unix() int64 {
-	return driver.Time().Unix()
+func (jt jTime) Unix() int64 {
+	return jt.Time().Unix()
 }
 
-func (driver jTime) UnixNano() int64 {
-	return driver.Time().UnixNano()
+func (jt jTime) UnixNano() int64 {
+	return jt.Time().UnixNano()
 }
 
-func (driver jTime) Time() time.Time {
+func (jt jTime) Time() time.Time {
 	// Handle empty date
-	if driver.IsZero() {
+	if jt.IsZero() {
 		return time.Time{}
 	}
 
 	var year, month, day int
 
 	// Convert the Shamsi to the corresponding Julian Day Number (JDN)
-	jdn := convertShamsiToJDN(driver.year, int(driver.month), driver.day)
+	jdn := convertShamsiToJDN(jt.year, int(jt.month), jt.day)
 
 	// Convert the JDN to a Gregorian testDate
 	if jdn > gregorianReformJulianDay {
@@ -395,7 +395,7 @@ func (driver jTime) Time() time.Time {
 	}
 
 	// Use the location stored in the Time struct, or default to the local time zone
-	loc := driver.loc
+	loc := jt.loc
 	if loc == nil {
 		loc = time.Local
 	}
@@ -403,11 +403,11 @@ func (driver jTime) Time() time.Time {
 	// Return the corresponding time.Time object
 	return time.Date(
 		year, time.Month(month), day,
-		driver.hour, driver.min, driver.sec,
-		driver.nsec, loc,
+		jt.hour, jt.min, jt.sec,
+		jt.nsec, loc,
 	)
 }
 
-func (driver jTime) String() string {
-	return driver.Format(time.RFC3339)
+func (jt jTime) String() string {
+	return jt.Format(time.RFC3339)
 }

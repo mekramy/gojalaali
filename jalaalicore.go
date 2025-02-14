@@ -14,14 +14,14 @@ type jTime struct {
 	wday  Weekday
 }
 
-func (driver *jTime) setTime(t time.Time) {
+func (jt *jTime) setTime(t time.Time) {
 	var year, month, day int
-	driver.nsec = t.Nanosecond()
-	driver.sec = t.Second()
-	driver.min = t.Minute()
-	driver.hour = t.Hour()
-	driver.loc = t.Location()
-	driver.wday = JWeekday(t.Weekday())
+	jt.nsec = t.Nanosecond()
+	jt.sec = t.Second()
+	jt.min = t.Minute()
+	jt.hour = t.Hour()
+	jt.loc = t.Location()
+	jt.wday = JWeekday(t.Weekday())
 
 	var jdn int
 	gy, gmm, gd := t.Date()
@@ -35,12 +35,12 @@ func (driver *jTime) setTime(t time.Time) {
 
 	year, month, day = convertJDNToShamsi(jdn)
 
-	driver.year = year
-	driver.month = Month(month)
-	driver.day = day
+	jt.year = year
+	jt.month = Month(month)
+	jt.day = day
 }
 
-func (driver *jTime) set(year int, month Month, day, hour, min, sec, nsec int, loc *time.Location) {
+func (jt *jTime) set(year int, month Month, day, hour, min, sec, nsec int, loc *time.Location) {
 	// helpers
 	norm := func(hi, lo, base int) (int, int) {
 		if lo < 0 {
@@ -97,88 +97,88 @@ func (driver *jTime) set(year int, month Month, day, hour, min, sec, nsec int, l
 	}
 	year, m = norm(year, m, 12)
 	month = Month(m) + 1
-	driver.year = year
-	driver.month = month
-	driver.day = day
-	driver.hour = hour
-	driver.min = min
-	driver.sec = sec
-	driver.nsec = nsec
-	driver.loc = loc
-	driver.resetWeekday()
-	driver.normalize()
+	jt.year = year
+	jt.month = month
+	jt.day = day
+	jt.hour = hour
+	jt.min = min
+	jt.sec = sec
+	jt.nsec = nsec
+	jt.loc = loc
+	jt.resetWeekday()
+	jt.normalize()
 }
 
-func (driver jTime) clone() *jTime {
+func (jt jTime) clone() *jTime {
 	return &jTime{
-		year:  driver.year,
-		month: driver.month,
-		day:   driver.day,
-		hour:  driver.hour,
-		min:   driver.min,
-		sec:   driver.sec,
-		nsec:  driver.nsec,
-		loc:   driver.loc,
-		wday:  driver.wday,
+		year:  jt.year,
+		month: jt.month,
+		day:   jt.day,
+		hour:  jt.hour,
+		min:   jt.min,
+		sec:   jt.sec,
+		nsec:  jt.nsec,
+		loc:   jt.loc,
+		wday:  jt.wday,
 	}
 }
 
-func (driver *jTime) normalize() {
-	driver.normalizeNano()
-	driver.normalizeSec()
-	driver.normalizeMin()
-	driver.normalizeHour()
-	driver.normalizeMonth()
-	driver.normalizeDay()
+func (jt *jTime) normalize() {
+	jt.normalizeNano()
+	jt.normalizeSec()
+	jt.normalizeMin()
+	jt.normalizeHour()
+	jt.normalizeMonth()
+	jt.normalizeDay()
 }
 
-func (driver *jTime) normalizeNano() {
-	if driver.nsec < 0 {
-		driver.nsec = 0
-	} else if driver.nsec > 999999999 {
-		driver.nsec = 999999999
+func (jt *jTime) normalizeNano() {
+	if jt.nsec < 0 {
+		jt.nsec = 0
+	} else if jt.nsec > 999999999 {
+		jt.nsec = 999999999
 	}
 }
 
-func (driver *jTime) normalizeSec() {
-	if driver.sec < 0 {
-		driver.sec = 0
-	} else if driver.sec > 59 {
-		driver.sec = 59
+func (jt *jTime) normalizeSec() {
+	if jt.sec < 0 {
+		jt.sec = 0
+	} else if jt.sec > 59 {
+		jt.sec = 59
 	}
 }
 
-func (driver *jTime) normalizeMin() {
-	if driver.min < 0 {
-		driver.min = 0
-	} else if driver.min > 59 {
-		driver.min = 59
+func (jt *jTime) normalizeMin() {
+	if jt.min < 0 {
+		jt.min = 0
+	} else if jt.min > 59 {
+		jt.min = 59
 	}
 }
 
-func (driver *jTime) normalizeHour() {
-	if driver.hour < 0 {
-		driver.hour = 0
-	} else if driver.hour > 23 {
-		driver.hour = 23
+func (jt *jTime) normalizeHour() {
+	if jt.hour < 0 {
+		jt.hour = 0
+	} else if jt.hour > 23 {
+		jt.hour = 23
 	}
 }
 
-func (driver *jTime) normalizeMonth() {
-	if driver.month < Farvardin {
-		driver.month = Farvardin
-	} else if driver.month > Esfand {
-		driver.month = Esfand
+func (jt *jTime) normalizeMonth() {
+	if jt.month < Farvardin {
+		jt.month = Farvardin
+	} else if jt.month > Esfand {
+		jt.month = Esfand
 	}
 }
 
-func (driver *jTime) normalizeDay() {
+func (jt *jTime) normalizeDay() {
 	index := 0
-	if driver.IsLeap() {
+	if jt.IsLeap() {
 		index = 1
 	}
 
-	mIndex := driver.month - 1
+	mIndex := jt.month - 1
 	if mIndex < 0 {
 		mIndex = 0
 	} else if mIndex > 11 {
@@ -186,13 +186,13 @@ func (driver *jTime) normalizeDay() {
 	}
 
 	days := monthMeta[mIndex][index]
-	if driver.day < 1 {
-		driver.day = 1
-	} else if driver.day > days {
-		driver.day = days
+	if jt.day < 1 {
+		jt.day = 1
+	} else if jt.day > days {
+		jt.day = days
 	}
 }
 
-func (driver *jTime) resetWeekday() {
-	driver.wday = JWeekday(driver.Time().Weekday())
+func (jt *jTime) resetWeekday() {
+	jt.wday = JWeekday(jt.Time().Weekday())
 }
